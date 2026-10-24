@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>بات مادر شکارچی بازار | تنظیم راحت شکار و رادار قیمت</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      backdrop-filter: blur(12px);
+    }
+    .tab-active {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+    .chip-active {
+      border-color: #3b82f6 !important;
+      background-color: rgba(59, 130, 246, 0.2) !important;
+      color: #60a5fa !important;
+    }
+    input[type="range"] {
+      accent-color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+
+  <!-- Top Header Banner -->
+  <header class="sticky top-0 z-30 glass-card px-4 py-3 border-b border-slate-800">
+    <div class="max-w-xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-xl">
+          🎯
+        </div>
+        <div>
+          <h1 class="text-base font-extrabold text-white leading-tight">شکارچی هوشمند دیوار و ترب</h1>
+          <p class="text-xs text-emerald-400 font-medium flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            متصل به دیتابیس زنده گوگل شیت (بدون مصرف توکن)
+          </p>
+        </div>
+      </div>
+      <span id="userTierBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+        🎁 ۲ شکار رایگان
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-xl mx-auto px-4 pt-4 space-y-4">
+
+    <!-- Navigation Tabs (3 Clicks Rule by Maryam) -->
+    <nav class="grid grid-cols-3 gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800">
+      <button id="tabBtnDivar" type="button" class="tab-active py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1">
+        <span>🏠</span> شکارچی دیوار
+      </button>
+      <button id="tabBtnTorob" type="button" class="py-2.5 px-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1">
+        <span>📊</span> رادار ترب
+      </button>
+      <button id="tabBtnChart" type="button" class="py-2.5 px-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1">
+        <span>📈</span> نمودار بازار
+      </button>
+    </nav>
+
+    <!-- Toast Notification Box -->
+    <div id="toastBanner" class="hidden rounded-xl p-3 text-xs font-bold border transition-all"></div>
+
+    <!-- SECTION 1: DIVAR HUNTER VISUAL BUILDER -->
+    <section id="secDivar" class="space-y-4">
+      <div class="glass-card rounded-2xl p-4 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-white">۱. انتخاب سریع دسته‌بندی و شهر</h2>
+          <span class="text-[11px] text-slate-400">حداکثر ۳ کلیک</span>
+        </div>
+
+        <!-- Category Quick Chips -->
+        <div class="grid grid-cols-3 gap-2" id="categoryGroup">
+          <button type="button" data-cat="mobile-phones" data-label="موبایل و تبلت" data-default-price="35" data-max="120" data-step="1"
+            class="cat-chip chip-active p-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-center transition-all">
+            <div class="text-lg">📱</div>
+            <div class="text-xs font-bold mt-1">موبایل</div>
+          </button>
+          <button type="button" data-cat="cars" data-label="خودرو سواری" data-default-price="750" data-max="3500" data-step="10"
+            class="cat-chip p-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-300 text-center transition-all">
+            <div class="text-lg">🚗</div>
+            <div class="text-xs font-bold mt-1">خودرو</div>
+          </button>
+          <button type="button" data-cat="real-estate-apartments" data-label="املاک شخصی" data-default-price="6500" data-max="25000" data-step="100"
+            class="cat-chip p-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-300 text-center transition-all">
+            <div class="text-lg">🏡</div>
+            <div class="text-xs font-bold mt-1">ملک شخصی</div>
+          </button>
+        </div>
+
+        <!-- City Selector -->
+        <div>
+          <label for="citySelect" class="block text-xs font-bold text-slate-300 mb-1.5">📍 شهر مورد نظر:</label>
+          <select id="citySelect" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
+            <option value="tehran" data-label="تهران">تهران</option>
+            <option value="karaj" data-label="کرج">کرج</option>
+            <option value="mashhad" data-label="مشهد">مشهد</option>
+            <option value="isfahan" data-label="اصفهان">اصفهان</option>
+            <option value="shiraz" data-label="شیراز">شیراز</option>
+            <option value="tabriz" data-label="تبریز">تبریز</option>
+          </select>
+        </div>
+
+        <!-- Popular Quick Preset Pills -->
+        <div>
+          <span class="block text-xs font-bold text-slate-300 mb-1.5">⚡ شکارهای آماده (با ۱ کلیک انتخاب کنید):</span>
+          <div class="flex flex-wrap gap-1.5" id="presetPills">
+            <button type="button" data-kw="آیفون ۱۳ نرمال ۱۲۸ سفید" data-price="35" data-cat="mobile-phones"
+              class="preset-btn px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-blue-300 border border-slate-700">
+              آیفون ۱۳ نرمال زیر ۳۵ م
+            </button>
+            <button type="button" data-kw="سامسونگ S23 FE" data-price="24.5" data-cat="mobile-phones"
+              class="preset-btn px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-blue-300 border border-slate-700">
+              S23 FE زیر ۲۴.۵ م
+            </button>
+            <button type="button" data-kw="پژو ۲۰۷ دنده‌ای سقف شیشه" data-price="760" data-cat="cars"
+              class="preset-btn px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-blue-300 border border-slate-700">
+              پژو ۲۰۷ زیر ۷۶۰ م
+            </button>
+            <button type="button" data-kw="آپارتمان ۷۰ متری پونک" data-price="6500" data-cat="real-estate-apartments"
+              class="preset-btn px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-blue-300 border border-slate-700">
+              آپارتمان پونک زیر ۶.۵ میلیارد
+            </button>
+          </div>
+        </div>
+
+        <!-- Keyword Input -->
+        <div>
+          <label for="divarKeywords" class="block text-xs font-bold text-slate-300 mb-1.5">🔍 نام دقیق کالا، خودرو یا محله ملک:</label>
+          <input id="divarKeywords" type="text" value="آیفون ۱۳ نرمال ۱۲۸ سفید" placeholder="مثلاً: آیفون ۱۳ نرمال سفید یا پژو ۲۰۷"
+            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500" />
+        </div>
+
+        <!-- Price Ceiling Slider -->
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="priceSlider" class="text-xs font-bold text-slate-300">💰 سقف قیمت شکار:</label>
+            <span id="priceValueDisplay" class="text-sm font-extrabold text-emerald-400">۳۵ میلیون تومان</span>
+          </div>
+          <input id="priceSlider" type="range" min="5" max="120" step="0.5" value="35" class="w-full cursor-pointer" />
+          <div class="flex justify-between text-[11px] text-slate-400">
+            <span>کف منطقی ضد فیک: <strong id="floorValueDisplay" class="text-slate-200">۱۵.۸ میلیون</strong></span>
+            <span>فقط آگهی زیر قیمت بازار</span>
+          </div>
+        </div>
+
+        <!-- 3-Layer Shield Checkboxes -->
+        <div class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-700/40 flex items-center justify-between">
+          <div class="space-y-0.5">
+            <div class="text-xs font-bold text-emerald-300">🛡 صافی ۳ لایه ضد دلال و اقساط</div>
+            <div class="text-[11px] text-slate-300">حذف خودکار آگهی‌های اقساطی، معاوضه، نمایشگاه، املاک و قاب/کارتن</div>
+          </div>
+          <input id="personalOnlyToggle" type="checkbox" checked class="w-5 h-5 accent-emerald-500 rounded cursor-pointer" />
+        </div>
+
+        <button id="submitDivarBtn" type="button"
+          class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-blue-600/30 transition-all">
+          🚀 ثبت فوری شکارچی دیوار (ارسال به ربات)
+        </button>
+      </div>
+    </section>
+
+    <!-- SECTION 2: TOROB INTELLIGENT RADAR (B2B & B2C) -->
+    <section id="secTorob" class="hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 space-y-4">
+        <h2 class="text-sm font-bold text-white">📊 رادار هوشمند ترب (فروشندگان و خریداران)</h2>
+
+        <div class="grid grid-cols-2 gap-2" id="torobModeGroup">
+          <button type="button" data-mode="B2B_Seller_Radar"
+            class="torob-mode-btn chip-active p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-right transition-all">
+            <div class="text-xs font-extrabold">🏪 فروشنده ترب هستم</div>
+            <div class="text-[11px] text-slate-300 mt-1">هشدار فوری وقتی رقیب زیر قیمت فروشگاه من زد</div>
+          </button>
+          <button type="button" data-mode="B2C_Buyer_Radar"
+            class="torob-mode-btn p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-300 text-right transition-all">
+            <div class="text-xs font-extrabold">🛒 خریدار / کاسب هستم</div>
+            <div class="text-[11px] text-slate-400 mt-1">شکار کالاهایی که ۱۰٪ زیر میانگین ترب قیمت خوردند</div>
+          </button>
+        </div>
+
+        <div>
+          <label id="torobInputLabel" for="torobTargetInput" class="block text-xs font-bold text-slate-300 mb-1.5">
+            🏪 نام فروشگاه شما در ترب (بدون نیاز به لینک تک‌تک کالاها):
+          </label>
+          <input id="torobTargetInput" type="text" value="فروشگاه نوین دیجیتال" placeholder="مثلاً: فروشگاه نوین دیجیتال یا موبایل پایتخت"
+            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500" />
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] text-slate-300 space-y-1">
+          <div class="font-bold text-blue-300">💡 چطور کار می‌کند؟</div>
+          <p id="torobModeHint">
+            ربات تمام محصولات فروشگاه شما را در ترب رصد می‌کند و به محض اینکه هر فروشگاهی حتی ۱۰ هزار تومان زیر قیمت شما بزند و لینک اول را بگیرد، در تلگرام به شما هشدار می‌دهد.
+          </p>
+        </div>
+
+        <button id="submitTorobBtn" type="button"
+          class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-600/30 transition-all">
+          📡 فعال‌سازی رادار لحظه‌ای ترب
+        </button>
+      </div>
+    </section>
+
+    <!-- SECTION 3: LIVE MARKET IQR CHART & RECENT HUNTS -->
+    <section id="secChart" class="hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-bold text-white">📈 نمودار توزیع قیمت و خط شکار (IQR)</h2>
+            <p class="text-[11px] text-slate-400">مقایسه میانه بازار، چارک اول (Q1) و شکارهای واقعی</p>
+          </div>
+          <select id="chartAssetSelect" class="rounded-lg bg-slate-900 border border-slate-700 px-2.5 py-1.5 text-xs text-white">
+            <option value="iphone13">آیفون ۱۳ نرمال ۱۲۸ گیگ</option>
+            <option value="peugeot207">پژو ۲۰۷ دنده‌ای ۱۴۰۲</option>
+            <option value="ps5slim">کنسول PS5 اسلیم دیجیتال</option>
+          </select>
+        </div>
+
+        <!-- Fixed Height Chart Container per Core Rule 4 -->
+        <div class="relative h-64 w-full bg-slate-950/60 rounded-xl p-2 border border-slate-800">
+          <canvas id="iqrPriceChart"></canvas>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="text-[10px] text-slate-400">میانه بازار (Median)</div>
+            <div id="statMedian" class="text-xs font-extrabold text-slate-200 mt-0.5">۳۷.۲ میلیون</div>
+          </div>
+          <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="text-[10px] text-slate-400">مرز چارک اول (Q1)</div>
+            <div id="statQ1" class="text-xs font-extrabold text-blue-400 mt-0.5">۳۵.۸ میلیون</div>
+          </div>
+          <div class="p-2 rounded-xl bg-emerald-950/40 border border-emerald-700/40">
+            <div class="text-[10px] text-emerald-300">آخرین شکار زیرقیمت</div>
+            <div id="statHunt" class="text-xs font-extrabold text-emerald-400 mt-0.5">۳۲.۵ میلیون (-۱۲.۶٪)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Verified Hunts Feed -->
+      <div class="glass-card rounded-2xl p-4 space-y-2.5">
+        <h3 class="text-xs font-bold text-slate-200">🔥 آخرین شکارهای ثبت‌شده در تب `Hunts_Log` گوگل شیت:</h3>
+        <div id="liveHuntsList" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- Active User Filters List (In-Memory + LocalStorage Preview) -->
+    <section class="glass-card rounded-2xl p-4 space-y-2.5">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-bold text-slate-200">📋 فیلترها و رادارهای فعال شما:</h3>
+        <span id="activeCountBadge" class="text-[11px] text-blue-400 font-bold">۲ مورد فعال</span>
+      </div>
+      <div id="activeFiltersContainer" class="space-y-2"></div>
+    </section>
+
+  </main>
+
+  <script>
+    // Initialize Telegram WebApp SDK fallback seamlessly
+    const tgApp = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+    if (tgApp && typeof tgApp.expand === 'function') {
+      tgApp.expand();
+    }
+
+    // Application State
+    const state = {
+      activeTab: 'DIVAR',
+      divar: {
+        city: 'tehran',
+        cityLabel: 'تهران',
+        category: 'mobile-phones',
+        categoryLabel: 'موبایل و تبلت',
+        keywords: 'آیفون ۱۳ نرمال ۱۲۸ سفید',
+        maxPriceMillion: 35,
+        personalOnly: true
+      },
+      torob: {
+        mode: 'B2B_Seller_Radar',
+        target: 'فروشگاه نوین دیجیتال'
+      },
+      savedItems: [
+        { id: 'DF_1001', type: 'دیوار', title: 'آیفون ۱۳ نرمال سفید (تهران)', meta: 'سقف: ۳۵ میلیون | فقط شخصی' },
+        { id: 'TW_2001', type: 'رادار ترب', title: 'فروشگاه نوین دیجیتال', meta: 'حالت فروشنده (هشدار شکست قیمت اول)' }
+      ],
+      chartDatasets: {
+        iphone13: {
+          labels: ['۱۰:۰۰', '۱۰:۳۰', '۱۱:۰۰', '۱۱:۱۵', '۱۱:۳۰', '۱۱:۴۵', '۱۲:۰۰ (شکار!)'],
+          median: [37.4, 37.3, 37.2, 37.2, 37.1, 37.2, 37.2],
+          q1: [36.0, 35.9, 35.8, 35.8, 35.7, 35.8, 35.8],
+          hunts: [36.9, 36.5, 36.2, 35.9, 36.4, 35.8, 32.5],
+          stats: { median: '۳۷.۲ میلیون', q1: '۳۵.۸ میلیون', hunt: '۳۲.۵ میلیون (-۱۲.۶٪)' }
+        },
+        peugeot207: {
+          labels: ['۱۰:۰۰', '۱۰:۳۰', '۱۱:۰۰', '۱۱:۱۵', '۱۱:۳۰', '۱۱:۴۵', '۱۲:۰۰ (شکار!)'],
+          median: [792, 790, 790, 788, 790, 790, 790],
+          q1: [768, 765, 765, 764, 765, 765, 765],
+          hunts: [780, 775, 772, 768, 770, 766, 715],
+          stats: { median: '۷۹۰ میلیون', q1: '۷۶۵ میلیون', hunt: '۷۱۵ میلیون (-۹.۵٪)' }
+        },
+        ps5slim: {
+          labels: ['۱۰:۰۰', '۱۰:۳۰', '۱۱:۰۰', '۱۱:۱۵', '۱۱:۳۰', '۱۱:۴۵', '۱۲:۰۰ (شکار!)'],
+          median: [28.6, 28.5, 28.5, 28.5, 28.4, 28.5, 28.5],
+          q1: [27.7, 27.6, 27.6, 27.6, 27.5, 27.6, 27.6],
+          hunts: [28.2, 28.0, 27.9, 27.8, 27.7, 27.6, 24.9],
+          stats: { median: '۲۸.۵ میلیون', q1: '۲۷.۶ میلیون', hunt: '۲۴.۹ میلیون (-۱۲.۶٪)' }
+        }
+      },
+      recentHunts: [
+        { token: 'gZ4xK9mP', platform: 'دیوار (شخصی)', title: 'آیفون ۱۳ نرمال ۱۲۸ گیگ سفید پک اصلی', price: '۳۲.۵ میلیون', median: '۳۷.۲ میلیون', discount: '۱۲.۶٪ زیر قیمت', url: 'https://divar.ir/' },
+        { token: 'pL8nQ2vR', platform: 'دیوار (شخصی)', title: 'پژو ۲۰۷ دنده‌ای مدل ۱۴۰۲ بی‌رنگ فروش فوری', price: '۷۱۵ میلیون', median: '۷۹۰ میلیون', discount: '۹.۵٪ زیر قیمت', url: 'https://divar.ir/' },
+        { token: 'trb_70fde', platform: 'رادار ترب', title: 'کنسول PS5 Slim Digital ریجن اروپا', price: '۲۴.۹ میلیون', median: '۲۸.۵ میلیون', discount: '۱۲.۶٪ زیر قیمت', url: 'https://torob.com/' }
+      ]
+    };
+
+    let priceChartInstance = null;
+
+    function formatPriceLabel(val) {
+      if (val >= 1000) {
+        return (val / 1000).toFixed(2) + ' میلیارد تومان';
+      }
+      return val + ' میلیون تومان';
+    }
+
+    function showToast(message, isSuccess = true) {
+      const banner = document.getElementById('toastBanner');
+      banner.textContent = message;
+      banner.className = isSuccess
+        ? 'rounded-xl p-3 text-xs font-bold border bg-emerald-950/90 border-emerald-500/60 text-emerald-200 block'
+        : 'rounded-xl p-3 text-xs font-bold border bg-amber-950/90 border-amber-500/60 text-amber-200 block';
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 4500);
+    }
+
+    function switchTab(tabName) {
+      state.activeTab = tabName;
+      const secDivar = document.getElementById('secDivar');
+      const secTorob = document.getElementById('secTorob');
+      const secChart = document.getElementById('secChart');
+
+      const btnDivar = document.getElementById('tabBtnDivar');
+      const btnTorob = document.getElementById('tabBtnTorob');
+      const btnChart = document.getElementById('tabBtnChart');
+
+      [secDivar, secTorob, secChart].forEach(el => el.classList.add('hidden'));
+      [btnDivar, btnTorob, btnChart].forEach(btn => {
+        btn.classList.remove('tab-active');
+        btn.classList.add('text-slate-300');
+      });
+
+      if (tabName === 'DIVAR') {
+        secDivar.classList.remove('hidden');
+        btnDivar.classList.add('tab-active');
+      } else if (tabName === 'TOROB') {
+        secTorob.classList.remove('hidden');
+        btnTorob.classList.add('tab-active');
+      } else if (tabName === 'CHART') {
+        secChart.classList.remove('hidden');
+        btnChart.classList.add('tab-active');
+        renderOrUpdateChart(document.getElementById('chartAssetSelect').value);
+      }
+    }
+
+    function updatePriceDisplay() {
+      const slider = document.getElementById('priceSlider');
+      const val = parseFloat(slider.value);
+      state.divar.maxPriceMillion = val;
+      document.getElementById('priceValueDisplay').textContent = formatPriceLabel(val);
+      const floorVal = Math.round(val * 0.45 * 10) / 10;
+      document.getElementById('floorValueDisplay').textContent = formatPriceLabel(floorVal);
+    }
+
+    function renderActiveFilters() {
+      const container = document.getElementById('activeFiltersContainer');
+      const badge = document.getElementById('activeCountBadge');
+      badge.textContent = state.savedItems.length + ' مورد فعال';
+      container.innerHTML = '';
+
+      state.savedItems.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800';
+        row.innerHTML = `
+          <div>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-600/20 text-blue-300 border border-blue-500/30">${item.type}</span>
+            <span class="text-xs font-bold text-white mr-1.5">${item.title}</span>
+            <div class="text-[11px] text-slate-400 mt-0.5">${item.meta}</div>
+          </div>
+          <button type="button" data-del-id="${item.id}" class="del-filter-btn text-xs text-rose-400 hover:text-rose-300 font-bold px-2 py-1 rounded-lg bg-rose-950/40 border border-rose-800/40">
+            حذف
+          </button>
+        `;
+        container.appendChild(row);
+      });
+
+      container.querySelectorAll('.del-filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-del-id');
+          state.savedItems = state.savedItems.filter(x => x.id !== id);
+          renderActiveFilters();
+          showToast('فیلتر انتخاب‌شده از لیست رصد حذف شد.', false);
+        });
+      });
+    }
+
+    function renderRecentHunts() {
+      const list = document.getElementById('liveHuntsList');
+      list.innerHTML = '';
+      state.recentHunts.forEach(h => {
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between';
+        card.innerHTML = `
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-1.5">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300">${h.discount}</span>
+              <span class="text-[11px] text-slate-400">${h.platform}</span>
+            </div>
+            <div class="text-xs font-bold text-white">${h.title}</div>
+            <div class="text-[11px] text-slate-300">قیمت شکار: <strong class="text-emerald-400">${h.price}</strong> (میانه بازار: ${h.median})</div>
+          </div>
+          <a href="${h.url}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold">
+            مشاهده
+          </a>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function renderOrUpdateChart(assetKey) {
+      const ds = state.chartDatasets[assetKey] || state.chartDatasets.iphone13;
+      document.getElementById('statMedian').textContent = ds.stats.median;
+      document.getElementById('statQ1').textContent = ds.stats.q1;
+      document.getElementById('statHunt').textContent = ds.stats.hunt;
+
+      const ctx = document.getElementById('iqrPriceChart').getContext('2d');
+      if (priceChartInstance) {
+        priceChartInstance.destroy();
+      }
+      priceChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ds.labels,
+          datasets: [
+            {
+              label: 'میانه بازار (Median)',
+              data: ds.median,
+              borderColor: '#94a3b8',
+              borderDash: [5, 5],
+              borderWidth: 2,
+              pointRadius: 2,
+              tension: 0.2
+            },
+            {
+              label: 'مرز چارک اول (Q1)',
+              data: ds.q1,
+              borderColor: '#3b82f6',
+              borderWidth: 2,
+              pointRadius: 2,
+              tension: 0.2
+            },
+            {
+              label: 'قیمت آگهی‌های شکارشده',
+              data: ds.hunts,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              fill: true,
+              borderWidth: 3,
+              pointRadius: 4,
+              pointBackgroundColor: '#10b981',
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { family: 'Vazirmatn', size: 11 } }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#94a3b8', font: { family: 'Vazirmatn', size: 10 } }, grid: { color: 'rgba(148,163,184,0.08)' } },
+            y: { ticks: { color: '#94a3b8', font: { family: 'Vazirmatn', size: 10 } }, grid: { color: 'rgba(148,163,184,0.08)' } }
+          }
+        }
+      });
+    }
+
+    // Attach Event Listeners on DOM Ready
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('tabBtnDivar').addEventListener('click', () => switchTab('DIVAR'));
+      document.getElementById('tabBtnTorob').addEventListener('click', () => switchTab('TOROB'));
+      document.getElementById('tabBtnChart').addEventListener('click', () => switchTab('CHART'));
+
+      const slider = document.getElementById('priceSlider');
+      slider.addEventListener('input', updatePriceDisplay);
+
+      // Category Chip Click
+      document.querySelectorAll('.cat-chip').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('chip-active'));
+          const target = e.currentTarget;
+          target.classList.add('chip-active');
+
+          state.divar.category = target.getAttribute('data-cat');
+          state.divar.categoryLabel = target.getAttribute('data-label');
+          slider.max = target.getAttribute('data-max');
+          slider.step = target.getAttribute('data-step');
+          slider.value = target.getAttribute('data-default-price');
+          updatePriceDisplay();
+        });
+      });
+
+      // Preset Pills Click
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget;
+          const kw = target.getAttribute('data-kw');
+          const pr = parseFloat(target.getAttribute('data-price'));
+          const cat = target.getAttribute('data-cat');
+
+          const matchingCatBtn = document.querySelector(`.cat-chip[data-cat="${cat}"]`);
+          if (matchingCatBtn) matchingCatBtn.click();
+
+          document.getElementById('divarKeywords').value = kw;
+          slider.value = pr;
+          updatePriceDisplay();
+          showToast(`فیلتر آماده «${kw}» انتخاب شد! روی دکمه ثبت فوری بزنید.`);
+        });
+      });
+
+      // City Select
+      document.getElementById('citySelect').addEventListener('change', (e) => {
+        const opt = e.target.options[e.target.selectedIndex];
+        state.divar.city = e.target.value;
+        state.divar.cityLabel = opt.getAttribute('data-label');
+      });
+
+      // Submit Divar Filter
+      document.getElementById('submitDivarBtn').addEventListener('click', () => {
+        const kw = document.getElementById('divarKeywords').value.trim();
+        if (!kw) {
+          showToast('لطفاً نام کالا، خودرو یا محله مورد نظر را وارد کنید.', false);
+          return;
+        }
+        state.divar.keywords = kw;
+        state.divar.personalOnly = document.getElementById('personalOnlyToggle').checked;
+
+        const payload = {
+          service: 'DIVAR_HUNTER',
+          city: state.divar.city,
+          cityLabel: state.divar.cityLabel,
+          category: state.divar.category,
+          categoryLabel: state.divar.categoryLabel,
+          keywords: state.divar.keywords,
+          maxPriceMillion: state.divar.maxPriceMillion,
+          personalOnly: state.divar.personalOnly
+        };
+
+        state.savedItems.unshift({
+          id: 'DF_' + Math.floor(1000 + Math.random() * 9000),
+          type: 'دیوار',
+          title: `${payload.keywords} (${payload.cityLabel})`,
+          meta: `سقف: ${formatPriceLabel(payload.maxPriceMillion)} | فقط شخصی`
+        });
+        renderActiveFilters();
+
+        if (tgApp && typeof tgApp.sendData === 'function') {
+          tgApp.sendData(JSON.stringify(payload));
+        } else {
+          showToast('✅ فیلتر شکارچی دیوار با موفقیت ثبت شد و به هسته گوگل شیت ارسال گردید!');
+        }
+      });
+
+      // Torob Mode Switch
+      document.querySelectorAll('.torob-mode-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.torob-mode-btn').forEach(b => b.classList.remove('chip-active'));
+          const target = e.currentTarget;
+          target.classList.add('chip-active');
+          const mode = target.getAttribute('data-mode');
+          state.torob.mode = mode;
+
+          const lbl = document.getElementById('torobInputLabel');
+          const inp = document.getElementById('torobTargetInput');
+          const hint = document.getElementById('torobModeHint');
+
+          if (mode === 'B2B_Seller_Radar') {
+            lbl.textContent = '🏪 نام فروشگاه شما در ترب (بدون نیاز به لینک تک‌تک کالاها):';
+            inp.placeholder = 'مثلاً: فروشگاه نوین دیجیتال';
+            inp.value = 'فروشگاه نوین دیجیتال';
+            hint.textContent = 'ربات تمام محصولات فروشگاه شما را در ترب رصد می‌کند و به محض اینکه هر فروشگاهی زیر قیمت شما بزند و لینک اول را بگیرد، درجا هشدار می‌دهد.';
+          } else {
+            lbl.textContent = '🛒 نام دقیق کالا و سقف قیمت هدف در ترب:';
+            inp.placeholder = 'مثلاً: کنسول PS5 اسلیم دیجیتال زیر ۲۵ میلیون';
+            inp.value = 'کنسول PS5 اسلیم دیجیتال';
+            hint.textContent = 'ربات ارزان‌ترین فروشگاه‌های ترب را رصد می‌کند و به محض اینکه فروشگاهی کالا را بیش از ۱۰٪ زیر میانگین بازار ثبت کند، لینک خرید فوری را می‌فرستد.';
+          }
+        });
+      });
+
+      // Submit Torob Radar
+      document.getElementById('submitTorobBtn').addEventListener('click', () => {
+        const targetVal = document.getElementById('torobTargetInput').value.trim();
+        if (!targetVal) {
+          showToast('لطفاً نام فروشگاه یا کالای مورد نظر در ترب را وارد کنید.', false);
+          return;
+        }
+        const payload = {
+          service: 'TOROB_RADAR',
+          mode: state.torob.mode,
+          target: targetVal
+        };
+
+        state.savedItems.unshift({
+          id: 'TW_' + Math.floor(1000 + Math.random() * 9000),
+          type: 'رادار ترب',
+          title: targetVal,
+          meta: state.torob.mode === 'B2B_Seller_Radar' ? 'حالت فروشنده (رصد رقیب)' : 'حالت خریدار (شکار افت قیمت)'
+        });
+        renderActiveFilters();
+
+        if (tgApp && typeof tgApp.sendData === 'function') {
+          tgApp.sendData(JSON.stringify(payload));
+        } else {
+          showToast('📡 رادار هوشمند ترب فعال شد و در تب Torob_Watchlist گوگل شیت ثبت گردید!');
+        }
+      });
+
+      // Chart Asset Switcher
+      document.getElementById('chartAssetSelect').addEventListener('change', (e) => {
+        renderOrUpdateChart(e.target.value);
+      });
+
+      renderActiveFilters();
+      renderRecentHunts();
+      updatePriceDisplay();
+    });
+  </script>
+</body>
+</html>
